@@ -266,17 +266,14 @@ handleInput:
 
 
 clearMaps:
-        lea rdi, [map]
-        mov rcx, mapSize
-        xor rax, rax
-        cld
-        rep stosb
+        mov rdi, 0
+.loop:
+        mov [map+rdi], 0
+        mov [playerMap+rdi], 11
 
-        lea rdi, [playerMap]
-        mov rcx, mapSize
-        xor rax, rax
-        cld
-        rep stosb
+        add rdi, 1
+        cmp rdi, [mapSize]
+        jl .loop
 
         ret
 
@@ -1091,6 +1088,7 @@ main:
         call [SetConsoleMode]
 
 .playLoop:
+        call clearMaps
         call clearScreen
 
 .getInitial:
@@ -1150,8 +1148,6 @@ main:
 
         call autoClear
 
-        call clearScreen
-
         xor rcx, rcx
         mov ecx, 0x00000000
         call resetConsoleCursor
@@ -1175,7 +1171,7 @@ main:
 
         lea rcx, [input]
         call readConsole
-        jmp .end
+        jmp .playLoop
 
 .won:
         call clearScreen
@@ -1192,7 +1188,7 @@ main:
 
         lea rcx, [input]
         call readConsole
-        jmp .end
+        jmp .playLoop
 .end:
 
         xor rcx, rcx
